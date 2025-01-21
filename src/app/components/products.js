@@ -11,7 +11,7 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { addToCart } = useCart();
+  const { addToCart, updateQuantity, isInCart, getItemQuantity } = useCart();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -35,23 +35,50 @@ const Products = () => {
   const handleAddToCart = (e, product) => {
     e.preventDefault();
     e.stopPropagation();
-    // console.log('Adding to cart:', product); // Debug log
     addToCart(product);
   };
 
-  if (loading)
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-amber-50">
-        <div className="text-lg text-amber-800">Loading products...</div>
-      </div>
-    );
+  const QuantityControls = ({ product }) => {
+    const quantity = getItemQuantity(product._id);
 
-  if (error)
     return (
-      <div className="flex items-center justify-center min-h-screen bg-amber-50">
-        <div className="text-red-500">{error}</div>
+      <div className="flex items-center gap-2">
+        <button
+          className="w-8 h-8 flex items-center justify-center bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            updateQuantity(product._id, quantity - 1);
+          }}
+        >
+          -
+        </button>
+        <span className="w-8 text-center text-amber-700 font-medium">{quantity}</span>
+        <button
+          className="w-8 h-8 flex items-center justify-center bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            updateQuantity(product._id, quantity + 1);
+          }}
+        >
+          +
+        </button>
       </div>
     );
+  };
+
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-screen bg-amber-50">
+      <div className="text-lg text-amber-800">Loading products...</div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="flex items-center justify-center min-h-screen bg-amber-50">
+      <div className="text-red-500">{error}</div>
+    </div>
+  );
 
   return (
     <section className="py-20 bg-amber-50">
@@ -70,10 +97,7 @@ const Products = () => {
               className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <div className="p-6">
-                <Link
-                  href={`/products/${product._id}`}
-                  className="block mb-4"
-                >
+                <Link href={`/products/${product._id}`} className="block mb-4">
                   <h2 className="text-xl font-semibold text-amber-800 mb-4">
                     {product.name}
                   </h2>
@@ -91,19 +115,22 @@ const Products = () => {
                     {product.description}
                   </p>
                   <p className="text-lg font-bold text-amber-800">
-                    $
-                    {typeof product.price === 'number'
-                      ? product.price.toFixed(2)
-                      : product.price}
+                    ${typeof product.price === 'number' ? product.price.toFixed(2) : product.price}
                   </p>
                 </Link>
                 <div className="flex gap-3">
-                  <button
-                    className="flex-1 bg-amber-600 text-white py-2 px-4 rounded-md hover:bg-amber-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50"
-                    onClick={(e) => handleAddToCart(e, product)}
-                  >
-                    Add to Cart
-                  </button>
+                  {isInCart(product._id) ? (
+                    <div className="flex-1 flex justify-center">
+                      <QuantityControls product={product} />
+                    </div>
+                  ) : (
+                    <button
+                      className="flex-1 bg-amber-600 text-white py-2 px-4 rounded-md hover:bg-amber-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50"
+                      onClick={(e) => handleAddToCart(e, product)}
+                    >
+                      Add to Cart
+                    </button>
+                  )}
                   <button
                     className="flex-1 bg-amber-800 text-white py-2 px-4 rounded-md hover:bg-amber-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50"
                     onClick={(e) => {
