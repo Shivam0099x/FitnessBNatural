@@ -10,13 +10,16 @@ const CART_STORAGE_KEY = 'shopping-cart';
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [cartItemCount, setCartItemCount] = useState(0); // Tracks distinct items count
 
   // Load cart data from localStorage after component mounts
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem(CART_STORAGE_KEY);
       if (savedCart) {
-        setCartItems(JSON.parse(savedCart));
+        const parsedCart = JSON.parse(savedCart);
+        setCartItems(parsedCart);
+        setCartItemCount(parsedCart.length); // Set initial distinct item count
       }
     } catch (error) {
       console.error('Error reading from localStorage:', error);
@@ -29,6 +32,7 @@ export function CartProvider({ children }) {
     if (isLoaded) {
       try {
         localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+        setCartItemCount(cartItems.length); // Update distinct item count
       } catch (error) {
         console.error('Error saving to localStorage:', error);
       }
@@ -74,15 +78,13 @@ export function CartProvider({ children }) {
   };
 
   const isInCart = (productId) => {
-    return cartItems.some(item => item._id === productId);
+    return cartItems.some((item) => item._id === productId);
   };
 
   const getItemQuantity = (productId) => {
-    const item = cartItems.find(item => item._id === productId);
+    const item = cartItems.find((item) => item._id === productId);
     return item ? item.quantity : 0;
   };
-
-  const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
   const cartTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -91,17 +93,17 @@ export function CartProvider({ children }) {
 
   return (
     <CartContext.Provider
-      value={{ 
-        cartItems, 
-        addToCart, 
-        removeFromCart, 
-        updateQuantity, 
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
         clearCart,
-        cartCount,
-        cartTotal,
         isInCart,
         getItemQuantity,
-        isLoaded
+        cartItemCount, // Use this for displaying count
+        cartTotal,
+        isLoaded,
       }}
     >
       {children}

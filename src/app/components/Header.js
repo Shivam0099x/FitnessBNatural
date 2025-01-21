@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ShoppingCart } from 'lucide-react';
@@ -7,7 +8,22 @@ import { useCart } from '../context/CartContext';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const { cartCount, isLoaded } = useCart();
+  const menuRef = useRef(null); // Ref to track the menu container
+  const { cartItemCount, isLoaded } = useCart();
+
+  const closeMenu = () => setIsOpen(false);
+
+  // Close the menu if the user clicks anywhere outside the menu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        closeMenu();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <header className="bg-amber-100 shadow-lg">
@@ -20,20 +36,20 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <div className="flex-1 hidden md:flex md:justify-center space-x-4">
-            <NavLink href="/">Home</NavLink>
-            <NavLink href="/products">Shop Now</NavLink>
-            <NavLink href="/about">About Us</NavLink>
-            <NavLink href="/contact">Contact Us</NavLink>
+            <NavLink href="/" onClick={closeMenu}>Home</NavLink>
+            <NavLink href="/products" onClick={closeMenu}>Shop Now</NavLink>
+            <NavLink href="/about" onClick={closeMenu}>About Us</NavLink>
+            <NavLink href="/contact" onClick={closeMenu}>Contact Us</NavLink>
           </div>
 
           {/* Cart Icon + Auth Buttons (Desktop) */}
           <div className="hidden md:flex md:items-center space-x-4">
-            <NavLink href="/cart">
+            <NavLink href="/cart" onClick={closeMenu}>
               <div className="text-amber-800 hover:text-amber-600 relative">
                 <ShoppingCart size={20} />
-                {isLoaded && cartCount > 0 && (
-                  <span className="absolute -top-1 -right-2 bg-red-600 text-white rounded-full text-xs px-1.5 py-0.5">
-                    {cartCount}
+                {isLoaded && cartItemCount > 0 && (
+                  <span className="absolute -top-2 -right-3 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                    {cartItemCount}
                   </span>
                 )}
               </div>
@@ -44,12 +60,12 @@ export default function Header() {
 
           {/* Cart Icon + Hamburger (Mobile) */}
           <div className="flex items-center md:hidden space-x-4">
-            <NavLink href="/cart">
+            <NavLink href="/cart" onClick={closeMenu}>
               <div className="text-amber-800 hover:text-amber-600 relative">
                 <ShoppingCart size={24} />
-                {isLoaded && cartCount > 0 && (
-                  <span className="absolute -top-1 -right-2 bg-red-600 text-white rounded-full text-xs px-1.5 py-0.5">
-                    {cartCount}
+                {isLoaded && cartItemCount > 0 && (
+                  <span className="absolute -top-2 -right-3 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                    {cartItemCount}
                   </span>
                 )}
               </div>
@@ -83,32 +99,19 @@ export default function Header() {
         {/* Mobile Menu */}
         {isOpen && (
           <motion.div
+            ref={menuRef}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             className="md:hidden mt-4 space-y-2"
+            onClick={closeMenu} // Close menu when clicking on any menu item
           >
-            <NavLink href="/" mobile>
-              Home
-            </NavLink>
-            <NavLink href="/products" mobile>
-              Shop Now
-            </NavLink>
-            <NavLink href="/about" mobile>
-              About Us
-            </NavLink>
-            <NavLink href="/contact" mobile>
-              Contact Us
-            </NavLink>
-            <NavLink href="/cart" mobile>
-              Cart {isLoaded && cartCount > 0 && `(${cartCount})`}
-            </NavLink>
-            <NavLink href="/login" mobile>
-              Login
-            </NavLink>
-            <NavLink href="/signup" mobile>
-              Signup
-            </NavLink>
+            <NavLink href="/" mobile>Home</NavLink>
+            <NavLink href="/products" mobile>Shop Now</NavLink>
+            <NavLink href="/about" mobile>About Us</NavLink>
+            <NavLink href="/contact" mobile>Contact Us</NavLink>
+            <NavLink href="/login" mobile>Login</NavLink>
+            <NavLink href="/signup" mobile>Signup</NavLink>
           </motion.div>
         )}
       </nav>
@@ -116,10 +119,11 @@ export default function Header() {
   );
 }
 
-function NavLink({ href, children, mobile }) {
+function NavLink({ href, children, mobile, onClick }) {
   return (
     <Link
       href={href}
+      onClick={onClick}
       className={`text-amber-800 hover:text-amber-600 transition-colors duration-300 ${
         mobile ? 'block py-2' : ''
       }`}

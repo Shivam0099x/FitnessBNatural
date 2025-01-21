@@ -53,7 +53,9 @@ const Products = () => {
         >
           -
         </button>
-        <span className="w-8 text-center text-amber-700 font-medium">{quantity}</span>
+        <span className="w-8 text-center text-amber-700 font-medium">
+          {quantity}
+        </span>
         <button
           className="w-8 h-8 flex items-center justify-center bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors"
           onClick={(e) => {
@@ -68,17 +70,19 @@ const Products = () => {
     );
   };
 
-  if (loading) return (
-    <div className="flex items-center justify-center min-h-screen bg-amber-50">
-      <div className="text-lg text-amber-800">Loading products...</div>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-amber-50">
+        <div className="text-lg text-amber-800">Loading products...</div>
+      </div>
+    );
 
-  if (error) return (
-    <div className="flex items-center justify-center min-h-screen bg-amber-50">
-      <div className="text-red-500">{error}</div>
-    </div>
-  );
+  if (error)
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-amber-50">
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
 
   return (
     <section className="py-20 bg-amber-50">
