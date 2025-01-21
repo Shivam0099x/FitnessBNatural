@@ -1,4 +1,3 @@
-// app/products/page.js
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -33,18 +32,33 @@ const Products = () => {
     fetchProducts();
   }, []);
 
-  if (loading) return <div className="flex items-center justify-center min-h-screen bg-amber-50">
-    <div className="text-lg text-amber-800">Loading products...</div>
-  </div>;
+  const handleAddToCart = (e, product) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // console.log('Adding to cart:', product); // Debug log
+    addToCart(product);
+  };
 
-  if (error) return <div className="flex items-center justify-center min-h-screen bg-amber-50">
-    <div className="text-red-500">{error}</div>
-  </div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-amber-50">
+        <div className="text-lg text-amber-800">Loading products...</div>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-amber-50">
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
 
   return (
     <section className="py-20 bg-amber-50">
       <div className="container mx-auto px-4">
-        <h1 className="text-3xl font-bold text-center text-amber-800 mb-12">Our Products</h1>
+        <h1 className="text-3xl font-bold text-center text-amber-800 mb-12">
+          Our Products
+        </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product, index) => (
             <motion.div
@@ -56,38 +70,44 @@ const Products = () => {
               className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <div className="p-6">
-                <Link href={`/products/${product._id}`} className="block mb-4">
-                  <h2 className="text-xl font-semibold text-amber-800 mb-4">{product.name}</h2>
+                <Link
+                  href={`/products/${product._id}`}
+                  className="block mb-4"
+                >
+                  <h2 className="text-xl font-semibold text-amber-800 mb-4">
+                    {product.name}
+                  </h2>
                   {product.image && (
                     <div className="relative h-48 mb-4 rounded-md overflow-hidden">
                       <Image
                         src={product.image}
                         alt={product.name}
-                        fill = {true}
+                        fill={true}
                         className="object-cover"
                       />
                     </div>
                   )}
-                  <p className="text-amber-600 mb-4 line-clamp-3">{product.description}</p>
+                  <p className="text-amber-600 mb-4 line-clamp-3">
+                    {product.description}
+                  </p>
                   <p className="text-lg font-bold text-amber-800">
-                    ${typeof product.price === 'number' ? product.price.toFixed(2) : product.price}
+                    $
+                    {typeof product.price === 'number'
+                      ? product.price.toFixed(2)
+                      : product.price}
                   </p>
                 </Link>
                 <div className="flex gap-3">
-                  <button 
+                  <button
                     className="flex-1 bg-amber-600 text-white py-2 px-4 rounded-md hover:bg-amber-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      addToCart(product);
-                    }}
+                    onClick={(e) => handleAddToCart(e, product)}
                   >
                     Add to Cart
                   </button>
-                  <button 
+                  <button
                     className="flex-1 bg-amber-800 text-white py-2 px-4 rounded-md hover:bg-amber-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50"
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Add your buy now logic here
                       console.log('Buy now clicked for product:', product._id);
                     }}
                   >
