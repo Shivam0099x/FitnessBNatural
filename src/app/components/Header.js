@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -103,6 +103,7 @@ export default function Header() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }} // Slow down the animation
             className="md:hidden mt-4 space-y-2"
             onClick={closeMenu} // Close menu when clicking on any menu item
           >
