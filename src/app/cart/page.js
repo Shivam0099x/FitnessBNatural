@@ -40,47 +40,48 @@ export default function Cart() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white rounded-lg shadow-md mb-4 overflow-hidden"
+              className="bg-white rounded-lg shadow-md mb-4 overflow-hidden border border-gray-200"
             >
               <div className="p-6 flex flex-col md:flex-row items-center gap-6">
-                {item.image && (
-                  <div className="relative w-32 h-32 rounded-md overflow-hidden">
+                {item.images && (
+                  <div className="relative w-36 h-36 rounded-md overflow-hidden shadow-sm border border-gray-200">
                     <Image
-                      src={item.image}
-                      alt={item.name}
+                      src={item.images[0]}
+                      alt={item.title}
                       fill
                       className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </div>
                 )}
                 <div className="flex-grow">
                   <Link href={`/products/${item._id}`}>
-                    <h2 className="text-xl font-semibold text-amber-800 mb-2">{item.name}</h2>
+                    <h2 className="text-xl font-semibold text-amber-800 mb-2">{item.title}</h2>
                   </Link>
-                  <p className="text-amber-600 mb-2">{item.description}</p>
+                  <p className="text-amber-600 mb-2 text-sm">{item.description}</p>
                   <p className="text-lg font-bold text-amber-800">
                     ${(item.price * item.quantity).toFixed(2)}
                   </p>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col md:flex-row items-center gap-4">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                      className="bg-amber-100 text-amber-800 px-3 py-1 rounded-md hover:bg-amber-200"
+                      className="bg-amber-100 text-amber-800 px-3 py-1 rounded-md hover:bg-amber-200 transition-colors duration-200"
                     >
                       -
                     </button>
-                    <span className="w-8 text-center">{item.quantity}</span>
+                    <span className="w-8 text-center text-amber-700">{item.quantity}</span>
                     <button
                       onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                      className="bg-amber-100 text-amber-800 px-3 py-1 rounded-md hover:bg-amber-200"
+                      className="bg-amber-100 text-amber-800 px-3 py-1 rounded-md hover:bg-amber-200 transition-colors duration-200"
                     >
                       +
                     </button>
                   </div>
                   <button
                     onClick={() => removeFromCart(item._id)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 hover:text-red-700 transition-colors duration-200"
                   >
                     Remove
                   </button>
@@ -96,7 +97,6 @@ export default function Cart() {
             <button 
               className="w-full bg-amber-800 text-white py-3 rounded-md hover:bg-amber-900 transition-colors duration-200"
               onClick={() => {
-                // Add your checkout logic here
                 console.log('Proceeding to checkout...');
               }}
             >
